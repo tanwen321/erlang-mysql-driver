@@ -177,6 +177,7 @@
 -define(CONNECT_TIMEOUT, 5000).
 -define(LOCAL_FILES, 128).
 -define(PORT, 3306).
+-define(MAXRECNT, 3).		%%reconnect fail max times
 
 %% used for debugging
 -define(L(Msg), io:format("~p:~b ~p ~n", [?MODULE, ?LINE, Msg])).
@@ -796,17 +797,20 @@ reconnect_loop(Conn, LogFun, N) ->
 	{error, Reason} ->
 	    %% log every once in a while
       NewN = case N of
-                 1 ->
-               ?Log2(LogFun, debug,
-                   "reconnect: still unable to connect to "
-                   "~p:~s:~p (~p)", [PoolId, Host, Port, Reason]),
-               0;
-                 _ ->
-               N + 1
-             end,
-	    %% sleep between every unsuccessful attempt
-	    timer:sleep(5000),
-	    reconnect_loop(Conn, LogFun, NewN)
+ 		if N >= ?MAXRECNT ->
+               		?Log2(LogFun, debug,
+                   	"reconnect: ~p times retry, finally unable to connect to "
+                   	"~p:~s:~p (~p)", [?MAXRECNT+1, PoolId, Host, Port, Reason]),
+               		no;
+        	true ->
+        		NewN = N+1,
+               		?Log2(LogFun, debug,
+                   	"reconnect: still unable to connect to "
+                   	"~p:~s:~p (~p)", [PoolId, Host, Port, Reason]),
+			%% sleep between every unsuccessful attempt
+			timer:sleep(5000),
+			reconnect_loop(Conn, LogFun, NewN)
+		end
     end.
 
 
