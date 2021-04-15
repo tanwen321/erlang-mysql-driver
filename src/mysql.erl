@@ -5,7 +5,7 @@
 %%%
 %%% Created :  4 Aug 2005 by Magnus Ahltorp <ahltorp@nada.kth.se>
 %%%
-%%% Copyright (c) 2001-2004 Kungliga Tekniska Högskolan
+%%% Copyright (c) 2001-2004 Kungliga Tekniska HÃ¶gskolan
 %%% See the file COPYING
 %%%
 %%% Modified: 9/12/2006 by Yariv Sadan <yarivvv@gmail.com>
@@ -539,7 +539,7 @@ init([PoolId, Host, Port, User, Password, Database, LogFun, Encoding]) ->
 		  password = Password,
 		  database = Database,
 		  encoding = Encoding},
-		  start_reconnect(C, LogFun),
+		  start_reconnect(C, LogFun1),
 	    {ok, #state{log_fun = LogFun1}}
     end.
 
